@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewData["Title"] = "Calculadora";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col"><h1 align="center">Calculadora de calorias</h1></div>
+    </div>
+    <div class="row">
+        <div class="col form-floating mb-3">
+            <input type="number" class="form-control" id="Calorias" placeholder="Calorias">
+            <label for="Calorias">Cantidad minima de calorias a quemar</label>
+        </div>
+        <div class="col form-floating mb-3">
+            <input type="number" class="form-control" id="Peso" placeholder="Peso">
+            <label for="Peso">Peso maximo a llevar</label>
+        </div>
+        <div class="col-1">
+            <button class="btn btn-primary btn-lg" id="Calcular">Calcular</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h2><label id="LabelInfo"></label></h2>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#Calcular").on('click', function () {
+        $.ajax({
+            url: 'Calculadora/Calcular',
+            type: 'Post',
+            data: {
+                'Calorias': $("#Calorias").val(),
+                'Peso': $("#Peso").val()
+            },
+            success: function (data) {
+
+                if (data.exception) {
+                    Swal.fire(
+                        '..Ups',
+                        `${data.message}`,
+                        'error'
+                    )
+                } else {
+                    var Info = '';
+                    var Peso = 0;
+                    var Calorias = 0;
+
+                    for (X = 0; X < data.data.length; X++) {
+
+                        Info += `${data.data[X].nombre}, `;
+
+                        Peso = Peso + data.data[X].peso;
+
+                        Calorias = Calorias + data.data[X].calorias;
+
+                    }
+                    $("#LabelInfo").html(`Elementos viables ${Info} Peso total: ${Peso}, Brinda ${Calorias} Calorias`);
+
+                    Swal.fire(
+                        `${data.message}`,
+                        `Elementos viables ${Info} Peso total: ${Peso}, Brinda ${Calorias} Calorias`,
+                        'success'
+                    )
+                }
+
+                
+            }
+        });
+
+    });
+</script>
+
